@@ -39,7 +39,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    # Apps locais serão adicionadas aqui
+    'users.apps.UsersConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -138,6 +138,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# =============================================================================
+# AUTH CONFIGURATION
+# =============================================================================
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # =============================================================================
 # REST FRAMEWORK CONFIGURATION
