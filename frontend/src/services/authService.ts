@@ -23,11 +23,25 @@ export const authService = {
       throw new Error('Usuário ou senha incorretos');
     }
     
-    const mockToken = 'mock-jwt-token-' + Date.now();
-    const mockRefresh = 'mock-refresh-token-' + Date.now();
+    const mockToken = 'mock-jwt-token-' + user.id + '-' + Date.now();
+    const mockRefresh = 'mock-refresh-token-' + user.id + '-' + Date.now();
     
     localStorage.setItem(STORAGE_KEYS.TOKEN, mockToken);
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, mockRefresh);
+    // Vincular token ao usuário específico para persistência
+    localStorage.setItem('current-user', JSON.stringify({
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      bio: user.bio,
+      profile_picture: user.profile_picture,
+      followers_count: user.followers_count,
+      following_count: user.following_count,
+      created_at: user.created_at,
+      is_following: user.is_following
+    }));
     
     return {
       access: mockToken,
@@ -76,6 +90,19 @@ export const authService = {
     
     localStorage.setItem(STORAGE_KEYS.TOKEN, mockToken);
     localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, mockRefresh);
+    // Vincular novo usuário ao token
+    localStorage.setItem('current-user', JSON.stringify({
+      id: newUser.id,
+      username: newUser.username,
+      email: newUser.email,
+      first_name: newUser.first_name,
+      last_name: newUser.last_name,
+      bio: newUser.bio,
+      profile_picture: newUser.profile_picture,
+      followers_count: newUser.followers_count,
+      following_count: newUser.following_count,
+      created_at: newUser.created_at
+    }));
     
     return {
       access: mockToken,
@@ -87,6 +114,7 @@ export const authService = {
   logout: () => {
     localStorage.removeItem(STORAGE_KEYS.TOKEN);
     localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    localStorage.removeItem('current-user');
   },
 
   getCurrentUser: async (): Promise<User> => {
@@ -97,12 +125,18 @@ export const authService = {
       throw new Error('Not authenticated');
     }
     
-    const user = mockUsers[mockUsers.length - 1];
-    if (!user) {
-      throw new Error('User not found');
+    // Recuperar usuário vinculado ao token
+    const currentUserData = localStorage.getItem('current-user');
+    if (!currentUserData) {
+      throw new Error('User data not found');
     }
     
-    return user;
+    try {
+      const user = JSON.parse(currentUserData);
+      return user;
+    } catch (error) {
+      throw new Error('Invalid user data');
+    }
   },
 
   isAuthenticated: (): boolean => {

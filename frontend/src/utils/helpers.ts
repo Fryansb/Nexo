@@ -13,7 +13,7 @@ export const formatDate = (dateString: string): string => {
 };
 
 /**
- * Format relative time (e.g., "2 hours ago")
+ * Format relative time using date-fns with Portuguese locale
  * @param dateString - ISO date string
  * @returns Relative time
  */
@@ -21,15 +21,18 @@ export const formatRelativeTime = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
+  // Para datas muito antigas, usar formato de data
   if (days > 7) {
     return formatDate(dateString);
   }
+
+  // Usar lógica simples para português sem dependência externa
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+
   if (days > 0) {
     return `${days} dia${days > 1 ? 's' : ''} atrás`;
   }

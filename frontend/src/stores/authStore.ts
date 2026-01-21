@@ -21,7 +21,7 @@ let loadUserPromise: Promise<void> | null = null;
  */
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       isAuthenticated: false,
       isLoading: false,
@@ -38,7 +38,12 @@ export const useAuthStore = create<AuthStore>()(
         }
 
         loadUserPromise = (async () => {
-          set({ isLoading: true });
+          // Só mostrar loading se não tiver usuário carregado ainda
+          const currentState = get();
+          if (!currentState.user) {
+            set({ isLoading: true });
+          }
+          
           try {
             const user = await authService.getCurrentUser();
             set({ user, isAuthenticated: true, isLoading: false });

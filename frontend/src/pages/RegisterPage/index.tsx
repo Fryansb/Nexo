@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 import { authService } from '../../services';
 import { useAuthStore } from '../../stores/authStore';
@@ -58,15 +59,8 @@ export const RegisterPage = () => {
       toast.success('Conta criada com sucesso!');
       navigate('/');
     } catch (error) {
-      const err = error as { 
-        response?: { 
-          data?: Record<string, string | string[]> 
-        };
-        message?: string;
-      };
-      
-      const errors = err.response?.data;
-      if (errors) {
+      if (axios.isAxiosError(error) && error.response?.data) {
+        const errors = error.response.data;
         Object.keys(errors).forEach((key) => {
           const messages = errors[key];
           if (Array.isArray(messages)) {
@@ -75,6 +69,8 @@ export const RegisterPage = () => {
             toast.error(`${key}: ${messages}`);
           }
         });
+      } else if (error instanceof Error) {
+        toast.error(error.message);
       } else {
         toast.error('Erro ao criar conta');
       }

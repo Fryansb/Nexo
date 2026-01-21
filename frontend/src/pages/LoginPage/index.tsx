@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 import { authService } from '../../services';
 import { useAuthStore } from '../../stores/authStore';
@@ -34,8 +35,13 @@ export const LoginPage = () => {
       toast.success('Login realizado com sucesso!');
       navigate('/');
     } catch (error) {
-      const err = error as { response?: { data?: { detail?: string } }; message?: string };
-      toast.error(err.response?.data?.detail || err.message || 'Erro ao fazer login');
+      if (axios.isAxiosError(error) && error.response?.data?.detail) {
+        toast.error(error.response.data.detail);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Erro ao fazer login');
+      }
     } finally {
       setIsLoading(false);
     }
