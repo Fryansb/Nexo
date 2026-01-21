@@ -50,7 +50,7 @@ class CustomUserAdmin(BaseUserAdmin):
             )
         }),
         ('Timestamps', {
-            'fields': ('created_at', 'updated_at', 'date_joined', 'last_login')
+            'fields': ('created_at', 'updated_at')
         }),
     )
     
