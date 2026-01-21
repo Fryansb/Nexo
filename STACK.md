@@ -42,32 +42,26 @@ Rede social completa com sistema de autenticação, perfis, posts, curtidas, com
 ## 🎨 Front-end
 
 ### Framework e Linguagem
-- **React 18** - Biblioteca UI
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool moderna e rápida
+- **React 19** - Biblioteca UI com hooks otimizados
+- **TypeScript** - Tipagem estática rigorosa
+- **Vite 7.3.1** - Build tool moderna e rápida
 
 ### Roteamento
-- **React Router v6** - Navegação entre páginas
+- **React Router v7** - Navegação entre páginas
 
 ### Gerenciamento de Estado
-- **React Query (TanStack Query)** - Cache e sincronização de dados da API
-- **Zustand** - Estado global leve (auth, user)
+- **Zustand** - Estado global com persistência (auth, user)
 
 ### Requisições HTTP
 - **Axios** - Cliente HTTP para consumir API
 
 ### UI e Estilização
-- **TailwindCSS** - Framework CSS utility-first
-- **Headless UI** - Componentes acessíveis (Modal, Dropdown, etc)
-- **Heroicons** - Ícones SVG
+- **CSS-in-JS** - Sistema de estilização 100% inline
+- **CSSProperties** - Tipagem TypeScript para estilos
 - **react-hot-toast** - Notificações elegantes
 
-### Formulários
-- **React Hook Form** - Gerenciamento de formulários
-- **Zod** - Validação de schemas
-
-### Imagens
-- **react-dropzone** - Upload de imagens drag-and-drop
+### Utilitários
+- **date-fns** - Manipulação de datas com i18n
 
 ---
 
@@ -174,15 +168,15 @@ VITE_API_URL=
 
 ## 🎯 Diferenciais
 
-- ⚡ Performance otimizada (React Query cache)
-- 🎨 UI moderna e responsiva (TailwindCSS)
+- ⚡ Performance otimizada (React.memo, useCallback, useMemo)
+- 🎨 UI moderna e responsiva (CSS-in-JS)
 - 🔒 Segurança (JWT, CORS, validações)
 - 📱 Mobile-friendly
-- 🧪 Testes automatizados
-- 🚀 CI/CD completo
-- 📚 Documentação API (Swagger)
+- 🧪 Mock system para desenvolvimento
+- 🚀 Build otimizado (343KB gzipped)
+- 📚 Documentação técnica completa
 - 🐳 Dockerizado
 
 ---
 
-**Última atualização:** Janeiro 2026
+**Última atualização:** Janeiro 2026 - v0.9.0-beta
