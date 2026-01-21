@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState, useCallback } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
-import { authService } from '../services';
-import { useAuthStore } from '../stores/authStore';
-import { Button, Input } from '../components/ui';
+import { authService } from '../../services';
+import { useAuthStore } from '../../stores/authStore';
+import { Button, Input } from '../../components/ui';
+import { styles } from './styles';
 
 /** Login page with authentication form */
 export const LoginPage = () => {
@@ -17,7 +18,13 @@ export const LoginPage = () => {
     password: '',
   });
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleChange = useCallback((field: 'username' | 'password') => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    };
+  }, []);
+
+  const handleSubmit = useCallback(async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -26,35 +33,30 @@ export const LoginPage = () => {
       setUser(response.user);
       toast.success('Login realizado com sucesso!');
       navigate('/');
-    } catch (error: any) {
-      toast.error(error.response?.data?.detail || 'Erro ao fazer login');
+    } catch (error) {
+      const err = error as { response?: { data?: { detail?: string } }; message?: string };
+      toast.error(err.response?.data?.detail || err.message || 'Erro ao fazer login');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [formData, setUser, navigate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-4xl font-bold text-gray-900">
-            Nexo
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Entre na sua conta
-          </p>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <div style={styles.header}>
+          <h2 style={styles.logo}>Nexo</h2>
+          <p style={styles.subtitle}>Entre na sua conta</p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        <form style={styles.form} onSubmit={handleSubmit}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <Input
               label="Username"
               type="text"
               required
               value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
+              onChange={handleChange('username')}
               placeholder="seu_username"
             />
 
@@ -63,9 +65,7 @@ export const LoginPage = () => {
               type="password"
               required
               value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
+              onChange={handleChange('password')}
               placeholder="••••••••"
             />
           </div>
@@ -74,19 +74,19 @@ export const LoginPage = () => {
             <Button
               type="submit"
               isLoading={isLoading}
-              className="w-full"
+              style={{ width: '100%' }}
               variant="primary"
             >
               Entrar
             </Button>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ fontSize: '14px', color: '#6b7280' }}>
               Não tem uma conta?{' '}
               <Link
                 to="/register"
-                className="font-medium text-primary-600 hover:text-primary-500"
+                style={{ fontWeight: '500', color: '#3b82f6', textDecoration: 'none' }}
               >
                 Cadastre-se
               </Link>

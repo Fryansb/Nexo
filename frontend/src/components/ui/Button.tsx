@@ -1,44 +1,151 @@
-import type { ButtonHTMLAttributes } from 'react';
+import React from 'react';
+import type { ButtonHTMLAttributes, CSSProperties } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
   isLoading?: boolean;
 }
 
+const buttonStyles: Record<string, CSSProperties> = {
+  base: {
+    padding: '8px 16px',
+    borderRadius: '6px',
+    fontWeight: '500',
+    transition: 'all 0.2s',
+    outline: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    fontSize: '14px',
+    minHeight: '40px',
+  },
+  primary: {
+    backgroundColor: '#3B82F6',
+    color: '#ffffff',
+  },
+  primaryHover: {
+    backgroundColor: '#2563EB',
+  },
+  secondary: {
+    backgroundColor: '#F3F4F6',
+    color: '#374151',
+    border: '1px solid #D1D5DB',
+  },
+  secondaryHover: {
+    backgroundColor: '#E5E7EB',
+  },
+  danger: {
+    backgroundColor: '#DC2626',
+    color: '#ffffff',
+  },
+  dangerHover: {
+    backgroundColor: '#B91C1C',
+  },
+  disabled: {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+  loading: {
+    opacity: 0.8,
+    cursor: 'not-allowed',
+  },
+};
+
 /** Reusable button component with loading state */
-export const Button = ({
+export const Button = React.memo(({
   children,
   variant = 'primary',
   isLoading = false,
   disabled,
-  className = '',
+  onMouseOver,
+  onMouseOut,
+  style,
   ...props
 }: ButtonProps) => {
-  const baseStyles = 'px-4 py-2 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-  
-  const variants = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-  };
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const handleMouseOver = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    setIsHovered(true);
+    onMouseOver?.(e);
+  }, [onMouseOver]);
+
+  const handleMouseOut = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    setIsHovered(false);
+    onMouseOut?.(e);
+  }, [onMouseOut]);
+
+  const getButtonStyle = React.useMemo((): CSSProperties => {
+    const baseStyle = { ...buttonStyles.base, ...buttonStyles[variant] };
+    
+    if (disabled || isLoading) {
+      return { ...baseStyle, ...buttonStyles.disabled };
+    }
+
+    if (isHovered) {
+      const hoverKey = `${variant}Hover` as keyof typeof buttonStyles;
+      return { ...baseStyle, ...buttonStyles[hoverKey] };
+    }
+
+    return baseStyle;
+  }, [variant, disabled, isLoading, isHovered]);
+
+  const LoadingSpinner = React.memo(() => (
+    <svg 
+      width="16" 
+      height="16" 
+      viewBox="0 0 24 24" 
+      fill="none"
+      style={{
+        animation: 'spin 1s linear infinite',
+      }}
+    >
+      <circle 
+        cx="12" 
+        cy="12" 
+        r="10" 
+        stroke="currentColor" 
+        strokeWidth="4"
+        opacity="0.25"
+      />
+      <path 
+        fill="currentColor" 
+        opacity="0.75"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
+    </svg>
+  ));
 
   return (
-    <button
-      className={`${baseStyles} ${variants[variant]} ${className}`}
-      disabled={disabled || isLoading}
-      {...props}
-    >
-      {isLoading ? (
-        <span className="flex items-center justify-center">
-          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Carregando...
-        </span>
-      ) : (
-        children
-      )}
-    </button>
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+      <button
+        style={{ ...getButtonStyle, ...style }}
+        disabled={disabled || isLoading}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+        {...props}
+      >
+        {isLoading ? (
+          <>
+            <LoadingSpinner />
+            Carregando...
+          </>
+        ) : (
+          children
+        )}
+      </button>
+    </>
   );
-};
+});
+
+Button.displayName = 'Button';

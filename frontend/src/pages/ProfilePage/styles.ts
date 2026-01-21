@@ -1,0 +1,105 @@
+import type { CSSProperties } from 'react';
+
+export const styles: Record<string, CSSProperties> = {
+  container: {
+    maxWidth: '800px',
+    margin: '0 auto',
+    padding: '20px',
+  },
+  header: {
+    backgroundColor: '#fff',
+    borderRadius: '12px',
+    padding: '24px',
+    marginBottom: '24px',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb',
+  },
+  avatarSection: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    marginBottom: '16px',
+  },
+  avatar: {
+    width: '80px',
+    height: '80px',
+    borderRadius: '50%',
+    backgroundColor: '#3b82f6',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '32px',
+    fontWeight: 'bold',
+    marginRight: '20px',
+  },
+  userInfo: {
+    flex: 1,
+  },
+  name: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#111',
+    marginBottom: '4px',
+  },
+  username: {
+    fontSize: '16px',
+    color: '#6b7280',
+    marginBottom: '8px',
+  },
+  bio: {
+    fontSize: '15px',
+    color: '#374151',
+    lineHeight: '1.5',
+  },
+  stats: {
+    display: 'flex',
+    gap: '32px',
+    paddingTop: '16px',
+    borderTop: '1px solid #f3f4f6',
+  },
+  stat: {
+    textAlign: 'center',
+  },
+  statNumber: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    color: '#111',
+    display: 'block',
+  },
+  statLabel: {
+    fontSize: '14px',
+    color: '#6b7280',
+  },
+  button: {
+    padding: '8px 24px',
+    backgroundColor: '#3b82f6',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  tabs: {
+    display: 'flex',
+    gap: '16px',
+    marginBottom: '24px',
+    borderBottom: '2px solid #f3f4f6',
+  },
+  tab: {
+    padding: '12px 16px',
+    fontSize: '15px',
+    fontWeight: '600',
+    color: '#6b7280',
+    background: 'none',
+    border: 'none',
+    borderBottom: '2px solid transparent',
+    cursor: 'pointer',
+    marginBottom: '-2px',
+  },
+  tabActive: {
+    color: '#3b82f6',
+    borderBottomColor: '#3b82f6',
+  },
+};

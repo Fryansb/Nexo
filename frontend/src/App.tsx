@@ -1,9 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { DevTools } from './components/DevTools';
 import { LoginPage, RegisterPage, HomePage, ProfilePage } from './pages';
+import { useAuthStore } from './stores/authStore';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,10 +18,17 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  const loadUser = useAuthStore((state) => state.loadUser);
+
+  // Load user on app mount
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-gray-50">
+        <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb' }}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -50,6 +60,7 @@ function App() {
         </div>
       </Router>
       <Toaster position="top-right" />
+      <DevTools />
     </QueryClientProvider>
   );
 }

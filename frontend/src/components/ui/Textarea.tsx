@@ -1,5 +1,6 @@
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
+import { textareaStyles } from './styles';
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
@@ -8,23 +9,51 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 
 /** Multiline text input with label and error message */
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = '', ...props }, ref) => {
+  ({ label, error, style, onFocus, onBlur, ...props }, ref) => {
+    const [isFocused, setIsFocused] = React.useState(false);
+
+    const handleFocus = React.useCallback((e: React.FocusEvent<HTMLTextAreaElement>) => {
+      setIsFocused(true);
+      onFocus?.(e);
+    }, [onFocus]);
+
+    const handleBlur = React.useCallback((e: React.FocusEvent<HTMLTextAreaElement>) => {
+      setIsFocused(false);
+      onBlur?.(e);
+    }, [onBlur]);
+
+    const getTextareaStyle = React.useMemo(() => {
+      let finalStyle = { ...textareaStyles.textarea };
+
+      if (error) {
+        finalStyle = { ...finalStyle, ...textareaStyles.textareaError };
+      } else if (isFocused) {
+        finalStyle = { ...finalStyle, ...textareaStyles.textareaFocus };
+      }
+
+      if (props.disabled) {
+        finalStyle = { ...finalStyle, ...textareaStyles.textareaDisabled };
+      }
+
+      return { ...finalStyle, ...style };
+    }, [error, isFocused, props.disabled, style]);
+
     return (
-      <div className="w-full">
+      <div style={textareaStyles.container}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label style={textareaStyles.label}>
             {label}
           </label>
         )}
         <textarea
           ref={ref}
-          className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-            error ? 'border-red-500' : ''
-          } ${className}`}
+          style={getTextareaStyle}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-sm text-red-600">{error}</p>
+          <p style={textareaStyles.error}>{error}</p>
         )}
       </div>
     );

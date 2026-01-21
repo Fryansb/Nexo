@@ -31,15 +31,15 @@ export const formatRelativeTime = (dateString: string): string => {
     return formatDate(dateString);
   }
   if (days > 0) {
-    return `${days} day${days > 1 ? 's' : ''} ago`;
+    return `${days} dia${days > 1 ? 's' : ''} atrás`;
   }
   if (hours > 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    return `${hours} hora${hours > 1 ? 's' : ''} atrás`;
   }
   if (minutes > 0) {
-    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    return `${minutes} minuto${minutes > 1 ? 's' : ''} atrás`;
   }
-  return 'just now';
+  return 'agora mesmo';
 };
 
 /**
@@ -61,6 +61,66 @@ export const truncateText = (text: string, maxLength: number): string => {
 export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+};
+
+/**
+ * Sanitize text content to prevent XSS
+ * @param text - Text to sanitize
+ * @returns Sanitized text
+ */
+export const sanitizeText = (text: string): string => {
+  return text
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+};
+
+/**
+ * Validate post content
+ * @param content - Post content to validate
+ * @returns Object with isValid and error message
+ */
+export const validatePostContent = (content: string): { isValid: boolean; error?: string } => {
+  const trimmed = content.trim();
+  
+  if (!trimmed) {
+    return { isValid: false, error: 'Conteúdo não pode estar vazio' };
+  }
+  
+  if (trimmed.length > 280) {
+    return { isValid: false, error: 'Conteúdo deve ter no máximo 280 caracteres' };
+  }
+  
+  return { isValid: true };
+};
+
+/**
+ * Validate password strength
+ * @param password - Password to validate
+ * @returns Object with isValid and error messages
+ */
+export const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  if (password.length < 8) {
+    errors.push('Senha deve ter pelo menos 8 caracteres');
+  }
+  
+  if (!/[a-z]/.test(password)) {
+    errors.push('Senha deve conter pelo menos uma letra minúscula');
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Senha deve conter pelo menos uma letra maiúscula');
+  }
+  
+  if (!/\d/.test(password)) {
+    errors.push('Senha deve conter pelo menos um número');
+  }
+  
+  return { isValid: errors.length === 0, errors };
 };
 
 /**

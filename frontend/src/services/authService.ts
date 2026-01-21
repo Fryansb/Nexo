@@ -1,21 +1,26 @@
 import type { AuthResponse, LoginCredentials, RegisterData, User } from '../types/index';
 import { STORAGE_KEYS } from '../utils/constants';
+import { getDummyUsers, populateDummyData } from '../utils/dummyData';
 
-// In-memory mock database
-const mockUsers: User[] = [];
-let mockUserId = 1;
+// In-memory mock database - initialized with dummy data
+populateDummyData(); // Garante que dados fictícios existam
+const mockUsers: (User & { password: string })[] = getDummyUsers();
+let mockUserId = mockUsers.length + 1;
 
 // Simulate network latency
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    await delay(500);
+    await delay(300); // Delay reduzido para testes mais rápidos
     
-    const user = mockUsers.find(u => u.username === credentials.username);
+    const user = mockUsers.find(u => 
+      u.username === credentials.username && 
+      u.password === credentials.password
+    );
     
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('Usuário ou senha incorretos');
     }
     
     const mockToken = 'mock-jwt-token-' + Date.now();
@@ -27,7 +32,19 @@ export const authService = {
     return {
       access: mockToken,
       refresh: mockRefresh,
-      user,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        bio: user.bio,
+        profile_picture: user.profile_picture,
+        followers_count: user.followers_count,
+        following_count: user.following_count,
+        created_at: user.created_at,
+        is_following: user.is_following
+      },
     };
   },
 
@@ -38,7 +55,7 @@ export const authService = {
       throw new Error('Username already exists');
     }
     
-    const newUser: User = {
+    const newUser: User & { password: string } = {
       id: mockUserId++,
       username: data.username,
       email: data.email,
@@ -49,6 +66,7 @@ export const authService = {
       followers_count: 0,
       following_count: 0,
       created_at: new Date().toISOString(),
+      password: data.password,
     };
     
     mockUsers.push(newUser);
