@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import F
 from PIL import Image
 
 
@@ -112,27 +113,25 @@ class Follow(models.Model):
         super().save(*args, **kwargs)
         
         if is_new:
-            # Update counters
-            self.follower.following_count = self.follower.following_set.count()
-            self.following.followers_count = self.following.followers_set.count()
-            
-            CustomUser.objects.bulk_update(
-                [self.follower, self.following],
-                ['following_count', 'followers_count']
+            # Use F() expressions for atomic counter updates
+            CustomUser.objects.filter(pk=self.follower.pk).update(
+                following_count=F('following_count') + 1
+            )
+            CustomUser.objects.filter(pk=self.following.pk).update(
+                followers_count=F('followers_count') + 1
             )
     
     def delete(self, *args, **kwargs):
         """Update follower counts when deleting follow relationship."""
-        follower = self.follower
-        following = self.following
+        follower_id = self.follower_id
+        following_id = self.following_id
         
         super().delete(*args, **kwargs)
         
-        # Update counters
-        follower.following_count = follower.following_set.count()
-        following.followers_count = following.followers_set.count()
-        
-        CustomUser.objects.bulk_update(
-            [follower, following],
-            ['following_count', 'followers_count']
+        # Use F() expressions for atomic counter updates
+        CustomUser.objects.filter(pk=follower_id).update(
+            following_count=F('following_count') - 1
+        )
+        CustomUser.objects.filter(pk=following_id).update(
+            followers_count=F('followers_count') - 1
         )
