@@ -39,7 +39,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    # Apps locais serão adicionadas aqui
+    'users',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -190,3 +190,9 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='').split(',')
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
+
+# =============================================================================
+# CUSTOM USER MODEL
+# =============================================================================
+
+AUTH_USER_MODEL = 'users.CustomUser'
